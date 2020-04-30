@@ -1,43 +1,21 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import './Carousel.css'
+import React, { useEffect, useState } from 'react';
+import './Carousel.css';
 
-class CarouselItem extends Component {
-  static propTypes = {
-    activeIndex: PropTypes.number.isRequired,
-    index: PropTypes.number.isRequired,
-    item: PropTypes.object.isRequired
-  }
+export default function CarouselItem(props) {
+  const { index, activeIndex, item } = props;
+  const [className, setClassName] = useState(props.index === props.activeIndex ? 'active' : '');
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      className: props.index === props.activeIndex ? 'active' : ''
-    }
-  }
-
-  componentWillReceiveProps (nextProps) {
-    const {
-      index
-    } = this.props
-
-    if (index === nextProps.activeIndex) {
-      this.setState({className: 'active'})
+  useEffect(() => {
+    if (index === activeIndex) {
+      setClassName('active');
     } else {
-      this.setState({className: ''})
+      setClassName('');
     }
-  }
+  }, [index, activeIndex]);
 
-  render () {
-    const { item } = this.props
-    const { className } = this.state
-
-    return (
-      <li className={`Carousel-item ${className}`}>
-        {item}
-      </li>
-    )
-  }
+  return (
+    <li className={`Carousel-item ${className}`}>
+      {item}
+    </li>
+  );
 }
-
-export default CarouselItem
