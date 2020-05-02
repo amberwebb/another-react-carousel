@@ -1,11 +1,43 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import CarouselItem from './CarouselItem';
-import './Carousel.css';
+import styled from 'styled-components';
+import { CarouselInterface } from "./types";
 
-export default function Carousel(props) {
-  const { autoScroll, autoScrollInterval, children } = props;
+const CarouselComponent = styled.div`
+  border: 1px solid #ccc;
+  width: 100%;
+  text-align: center;
+`;
+
+const CarouselInner = styled.ul`
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 0;
+`;
+
+const CarouselControls = styled.div`
+  width: 100%;
+  display: block;
+  float: left;
+  position: relative;
+  margin-top: 10px;
+`;
+
+const CarouselNav = styled.div`
+  height: 15px;
+  width: 15px;
+  background-color: ${(props: {index: number, activeIndex: number}) =>
+    props.index === props.activeIndex ? '#999' : '#ccc'};
+  border-radius: 50%;
+  display: inline-block;
+  margin: 3px;
+`;
+
+export default function Carousel(props: CarouselInterface) {
+  const {autoScroll, autoScrollInterval, children} = props;
   const [activeIndex, setActiveIndex] = useState(0);
-  let rotate = useRef(null);
+  const rotate = useRef(0);
 
   useEffect(() => {
     function getAutoIndex() {
@@ -33,12 +65,12 @@ export default function Carousel(props) {
       if (rotate.current) {
         clearInterval(rotate.current);
       }
-    }
+    };
   }, [activeIndex, children, autoScrollInterval, autoScroll]);
 
   function displayChildren() {
     return (
-      children.map((child, index) => {
+      children.map((child: any, index: number) => {
         return (
           <CarouselItem
             activeIndex={activeIndex}
@@ -48,45 +80,46 @@ export default function Carousel(props) {
           />
         );
       })
-    )
+    );
   }
 
-  function navigate(event) {
-    const { current } = rotate;
+  function navigate(event: any) {
+    const {current} = rotate;
     const index = event.currentTarget.getAttribute('data-index');
     setActiveIndex(parseInt(index, 10));
     if (current) {
-      clearInterval(current)
+      clearInterval(current);
     }
   }
 
   function renderControls() {
     if (children.length > 1) {
       return (
-        children.map((child, index) => {
+        children.map((child: any, index: number) => {
           return (
-            <div
-              className={index === activeIndex ? 'Carousel-navDot Carousel-navDot-active' : 'Carousel-navDot'}
+            <CarouselNav
+              index={index}
+              activeIndex={activeIndex}
               key={index}
               data-index={index}
               onClick={navigate}
             />
           );
         })
-      )
+      );
     } else {
       return null;
     }
   }
 
   return (
-    <div className='Carousel'>
-      <ul className='Carousel-inner'>
+    <CarouselComponent>
+      <CarouselInner>
         {displayChildren()}
-      </ul>
-      <div className='Carousel-controls'>
+      </CarouselInner>
+      <CarouselControls>
         {renderControls()}
-      </div>
-    </div>
+      </CarouselControls>
+    </CarouselComponent>
   );
 }
